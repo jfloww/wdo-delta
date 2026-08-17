@@ -1,0 +1,114 @@
+[project]
+name = "offerdelta"
+version = "0.1.0"
+description = "Personalized job offer and relocation decision engine"
+requires-python = ">=3.12"
+
+# The domain layer is standard-library only by design (blueprint section 10.1).
+# Runtime dependencies arrive with the API layer in milestone 5, not before.
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-cov>=5.0",
+    "hypothesis>=6.112",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "import-linter>=2.0",
+    "pre-commit>=3.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/offerdelta"]
+
+# ---------------------------------------------------------------- ruff
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",    # pycodestyle
+    "F",         # pyflakes
+    "I",         # isort
+    "N",         # pep8-naming
+    "UP",        # pyupgrade
+    "B",         # bugbear
+    "A",         # builtins shadowing
+    "C4",        # comprehensions
+    "DTZ",       # naive datetime
+    "PIE",
+    "PT",        # pytest style
+    "RET",
+    "SIM",
+    "ARG",       # unused arguments
+    "PL",        # pylint
+    "RUF",
+]
+ignore = [
+    "PLR0913",   # many arguments: financial models legitimately have many fields
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["PLR2004"]  # magic values are the point of a test
+
+# ---------------------------------------------------------------- mypy
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+disallow_any_explicit = true
+files = ["src", "tests"]
+
+# ---------------------------------------------------------------- pytest
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers --strict-config"
+markers = [
+    "property: Hypothesis property-based tests",
+]
+
+# ---------------------------------------------------------------- import-linter
+
+[tool.importlinter]
+root_package = "offerdelta"
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Domain depends on the standard library only"
+type = "forbidden"
+source_modules = ["offerdelta.domain"]
+forbidden_modules = [
+    "fastapi",
+    "pydantic",
+    "sqlalchemy",
+    "alembic",
+    "boto3",
+    "botocore",
+    "pyspark",
+    "httpx",
+    "requests",
+]
+
+# The layered contract below activates in milestone 5, when the api and
+# application packages first exist. import-linter fails on a missing layer, so
+# it stays commented until then rather than being silently skipped.
+#
+# [[tool.importlinter.contracts]]
+# name = "Layers"
+# type = "layers"
+# layers = [
+#     "offerdelta.api",
+#     "offerdelta.application",
+#     "offerdelta.domain",
+# ]
+# exhaustive = false
