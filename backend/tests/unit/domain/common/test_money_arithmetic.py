@@ -98,3 +98,28 @@ def test_comparison_rejects_a_different_currency() -> None:
 def test_is_zero() -> None:
     assert Money.parse("0.00").is_zero()
     assert not Money.parse("0.01").is_zero()
+
+
+def test_divides_by_an_integer_count() -> None:
+    # Dividing an amount by a number of periods or shares. Multiplying by a
+    # precomputed reciprocal instead would lose precision: Decimal(1)/48 is
+    # non-terminating, so 48000 * (1/48) is 999.9999999999999999999999998.
+    assert Money.parse("48000.00") / 48 == Money.parse("1000.00")
+
+
+def test_divides_by_a_decimal() -> None:
+    assert Money.parse("100.00") / Decimal("4") == Money.parse("25.00")
+
+
+def test_division_does_not_round() -> None:
+    assert (Money.parse("100.00") / 3).amount != Decimal("33.33")
+
+
+def test_division_rejects_a_float_divisor() -> None:
+    with pytest.raises(TypeError, match="float"):
+        Money.parse("100.00") / 3.0  # type: ignore[operator]
+
+
+def test_division_by_zero_is_rejected() -> None:
+    with pytest.raises(ZeroDivisionError):
+        Money.parse("100.00") / 0

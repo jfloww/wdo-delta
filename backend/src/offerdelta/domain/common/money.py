@@ -131,6 +131,28 @@ class Money:
 
     __rmul__ = __mul__
 
+    def __truediv__(self, divisor: Decimal | int) -> Money:
+        """Divide by a count of shares or periods.
+
+        Prefer this over multiplying by a precomputed reciprocal. `Decimal(1)/48`
+        is non-terminating, so `total * (1 / 48)` loses precision, while
+        `total / 48` divides the exact amount once.
+
+        No rounding: a non-terminating quotient keeps Decimal context precision
+        and is quantised at an explicit boundary.
+        """
+        if isinstance(divisor, float):
+            raise TypeConstraintError(
+                "Money cannot be divided by a float; use Decimal or int for exact division"
+            )
+        if not isinstance(divisor, Decimal | int):
+            raise TypeConstraintError(
+                f"Money can only be divided by Decimal or int, got {type(divisor).__name__}"
+            )
+        if divisor == 0:
+            raise ZeroDivisionError("cannot divide Money by zero")
+        return Money(self.amount / divisor, self.currency)
+
     def __lt__(self, other: Money) -> bool:
         self._same_currency(other)
         return self.amount < other.amount
