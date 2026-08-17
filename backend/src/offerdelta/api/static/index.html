@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OfferDelta — walking skeleton</title>
+<style>
+  :root {
+    --bg: #fbfaf8; --panel: #ffffff; --ink: #1a1a1a; --muted: #6b6b6b;
+    --line: #e4e1dc; --accent: #1f6f5c; --negative: #a3432f;
+    --badge-assumed: #8a6d1f; --badge-assumed-bg: #fdf6e0;
+    --badge-confirmed: #1f6f5c; --badge-confirmed-bg: #e6f2ee;
+    --badge-derived: #4a5568; --badge-derived-bg: #eef0f3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16181a; --panel: #1e2124; --ink: #e8e6e3; --muted: #9aa0a6;
+      --line: #2e3236; --accent: #5cc0a2; --negative: #e08a72;
+      --badge-assumed: #e0c068; --badge-assumed-bg: #322c18;
+      --badge-confirmed: #5cc0a2; --badge-confirmed-bg: #16302a;
+      --badge-derived: #a8b0bb; --badge-derived-bg: #24282d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 2.5rem 1.25rem 4rem; background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 46rem; margin: 0 auto; }
+  .eyebrow {
+    font-size: .75rem; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 .5rem;
+  }
+  h1 { font-size: 1.35rem; font-weight: 600; margin: 0 0 1.75rem; }
+  .headline {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 1.5rem 1.5rem 1.35rem; margin-bottom: 1.75rem;
+  }
+  .headline .label { font-size: .875rem; color: var(--muted); margin-bottom: .3rem; }
+  .headline .value {
+    font-size: 2.5rem; font-weight: 650; letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .headline .period { font-size: .875rem; color: var(--muted); margin-top: .2rem; }
+  h2 { font-size: .95rem; font-weight: 600; margin: 0 0 .75rem; }
+  .tree { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: .5rem; }
+  .node { border-radius: 6px; }
+  .row {
+    display: flex; align-items: baseline; gap: .75rem;
+    padding: .5rem .65rem; border-radius: 6px;
+  }
+  .row:hover { background: color-mix(in srgb, var(--line) 40%, transparent); }
+  .name { flex: 1; min-width: 0; }
+  .name b { font-weight: 550; }
+  .formula {
+    display: block; font-size: .78rem; color: var(--muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: .15rem;
+  }
+  .amt { font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 550; }
+  .amt.neg { color: var(--negative); }
+  .amt.pos { color: var(--accent); }
+  .badge {
+    font-size: .68rem; letter-spacing: .04em; text-transform: uppercase;
+    padding: .12rem .4rem; border-radius: 4px; white-space: nowrap; font-weight: 600;
+  }
+  .ASSUMED { color: var(--badge-assumed); background: var(--badge-assumed-bg); }
+  .USER_CONFIRMED { color: var(--badge-confirmed); background: var(--badge-confirmed-bg); }
+  .SOURCED { color: var(--badge-confirmed); background: var(--badge-confirmed-bg); }
+  .DERIVED { color: var(--badge-derived); background: var(--badge-derived-bg); }
+  .kids { margin-left: 1.1rem; border-left: 1px solid var(--line); padding-left: .35rem; }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  .caret { color: var(--muted); width: .75rem; display: inline-block; font-size: .7rem; }
+  footer { margin-top: 2rem; font-size: .8rem; color: var(--muted); }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .85em; }
+  .err { color: var(--negative); }
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">OfferDelta · walking skeleton</p>
+  <h1>Every number can be taken apart.</h1>
+
+  <div class="headline">
+    <div class="label">Monthly disposable cash — demo profile</div>
+    <div class="value" id="total">…</div>
+    <div class="period" id="period"></div>
+  </div>
+
+  <h2>Derivation</h2>
+  <div class="tree" id="tree"></div>
+
+  <footer>
+    <p>
+      Amounts cross the API as exact decimal <strong>strings</strong> and are formatted here
+      by string manipulation only. This page never calls <code>Number()</code> on money —
+      JavaScript's only numeric type is an IEEE 754 double, which cannot represent
+      <code>4217.33</code> exactly.
+    </p>
+    <p id="meta"></p>
+  </footer>
+</main>
+
+<script>
+// Format an exact decimal string without ever converting it to a Number.
+function formatMoney(amount, currency) {
+  const negative = amount.startsWith("-");
+  const magnitude = negative ? amount.slice(1) : amount;
+  const [wholeRaw, fracRaw = ""] = magnitude.split(".");
+  const frac = (fracRaw + "00").slice(0, 2);
+  const whole = wholeRaw.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const symbol = currency === "USD" ? "$" : currency + " ";
+  return (negative ? "−" : "") + symbol + whole + "." + frac;
+}
+
+function renderNode(node) {
+  const wrap = document.createElement("div");
+  wrap.className = "node";
+
+  const row = document.createElement("div");
+  row.className = "row";
+
+  const hasKids = node.children && node.children.length > 0;
+  const caret = document.createElement("span");
+  caret.className = "caret";
+  caret.textContent = hasKids ? "▾" : "";
+
+  const name = document.createElement("div");
+  name.className = "name";
+  const title = document.createElement("b");
+  title.textContent = node.label;
+  name.appendChild(title);
+  const formula = document.createElement("span");
+  formula.className = "formula";
+  formula.textContent = node.formula;
+  name.appendChild(formula);
+
+  const badge = document.createElement("span");
+  badge.className = "badge " + node.evidence;
+  badge.textContent = node.evidence.replace("_", " ");
+
+  const amount = document.createElement("span");
+  amount.className = "amt " + (node.amount.startsWith("-") ? "neg" : "pos");
+  amount.textContent = formatMoney(node.amount, node.currency);
+
+  row.append(caret, name, badge, amount);
+
+  if (!hasKids) {
+    wrap.appendChild(row);
+    return wrap;
+  }
+
+  const details = document.createElement("details");
+  details.open = true;
+  const summary = document.createElement("summary");
+  summary.appendChild(row);
+  details.appendChild(summary);
+
+  const kids = document.createElement("div");
+  kids.className = "kids";
+  for (const child of node.children) kids.appendChild(renderNode(child));
+  details.appendChild(kids);
+
+  wrap.appendChild(details);
+  return wrap;
+}
+
+async function load() {
+  const tree = document.getElementById("tree");
+  try {
+    const [root, version] = await Promise.all([
+      fetch("/v1/demo/derivation").then((r) => r.json()),
+      fetch("/v1/version").then((r) => r.json()),
+    ]);
+
+    document.getElementById("total").textContent = formatMoney(root.amount, root.currency);
+    document.getElementById("period").textContent = root.period.toLowerCase();
+    tree.replaceChildren(renderNode(root));
+    document.getElementById("meta").textContent =
+      "engine " + version.engine + " · service " + version.version;
+  } catch (error) {
+    tree.innerHTML = '<p class="err">Could not load the derivation.</p>';
+    console.error(error);
+  }
+}
+
+load();
+</script>
+</body>
+</html>

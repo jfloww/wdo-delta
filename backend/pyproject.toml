@@ -4,9 +4,12 @@ version = "0.1.0"
 description = "Personalized job offer and relocation decision engine"
 requires-python = ">=3.12"
 
-# The domain layer is standard-library only by design (blueprint section 10.1).
-# Runtime dependencies arrive with the API layer in milestone 5, not before.
-dependencies = []
+# The domain layer stays standard-library only (blueprint section 10.1); the
+# import-linter contract below enforces that these never reach it.
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+]
 
 [dependency-groups]
 dev = [
@@ -17,6 +20,7 @@ dev = [
     "mypy>=1.11",
     "import-linter>=2.0",
     "pre-commit>=3.8",
+    "httpx2>=2.10.0",
 ]
 
 [build-system]
@@ -66,7 +70,15 @@ python_version = "3.12"
 strict = true
 warn_unreachable = true
 disallow_any_explicit = true
+plugins = ["pydantic.mypy"]
 files = ["src", "tests"]
+
+# Pydantic's BaseModel carries explicit Any in its own signatures, and a wire
+# boundary deals in untyped JSON by nature. The relaxation stops at the API
+# edge: the domain, where exactness is the point, stays maximally strict.
+[[tool.mypy.overrides]]
+module = ["offerdelta.api.*"]
+disallow_any_explicit = false
 
 # ---------------------------------------------------------------- pytest
 
@@ -99,16 +111,12 @@ forbidden_modules = [
     "requests",
 ]
 
-# The layered contract below activates in milestone 5, when the api and
-# application packages first exist. import-linter fails on a missing layer, so
-# it stays commented until then rather than being silently skipped.
-#
-# [[tool.importlinter.contracts]]
-# name = "Layers"
-# type = "layers"
-# layers = [
-#     "offerdelta.api",
-#     "offerdelta.application",
-#     "offerdelta.domain",
-# ]
-# exhaustive = false
+[[tool.importlinter.contracts]]
+name = "Layers"
+type = "layers"
+layers = [
+    "offerdelta.api",
+    "offerdelta.application",
+    "offerdelta.domain",
+]
+exhaustive = false

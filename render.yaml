@@ -1,0 +1,20 @@
+# Render Blueprint.
+#
+# In the Render dashboard: New -> Blueprint -> connect jfloww/wdo-delta.
+# Render reads this file and creates the service; no manual configuration.
+#
+# The free plan sleeps after 15 minutes of inactivity and takes roughly 30
+# seconds to wake. That is fine for a portfolio demo and costs nothing. Upgrade
+# to starter before putting the URL in an application if the cold start is
+# likely to be the first impression.
+
+services:
+  - type: web
+    name: offerdelta
+    runtime: docker
+    plan: free
+    region: ohio
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /v1/health/ready
+    autoDeployTrigger: commit
