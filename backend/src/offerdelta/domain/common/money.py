@@ -16,6 +16,12 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import Final
 
+from offerdelta.domain.common.errors import (
+    AllocationError,
+    CurrencyMismatchError,
+    TypeConstraintError,
+    ValidationError,
+)
 from offerdelta.domain.common.rounding import ALLOCATION_PLACES, RoundingPolicy
 
 _ISO_4217_LENGTH: Final = 3
@@ -37,20 +43,22 @@ class Money:
         # float statically. The runtime guard catches everything the checker
         # never sees, notably JSON payloads and values built dynamically.
         if isinstance(self.amount, float):  # type: ignore[unreachable]
-            raise TypeError(
+            raise TypeConstraintError(
                 "Money rejects float because binary floating point cannot represent "
                 "decimal currency exactly; pass a Decimal or use Money.parse()"
             )
         if not isinstance(self.amount, Decimal):
-            raise TypeError(f"Money.amount must be Decimal, got {type(self.amount).__name__}")
+            raise TypeConstraintError(
+                f"Money.amount must be Decimal, got {type(self.amount).__name__}"
+            )
         if not self.amount.is_finite():
-            raise ValueError(f"Money requires a finite amount, got {self.amount}")
+            raise ValidationError(f"Money requires a finite amount, got {self.amount}")
         if (
             len(self.currency) != _ISO_4217_LENGTH
             or not self.currency.isalpha()
             or not self.currency.isupper()
         ):
-            raise ValueError(
+            raise ValidationError(
                 f"currency must be an ISO 4217 code such as 'USD', got {self.currency!r}"
             )
 
@@ -64,13 +72,15 @@ class Money:
         type exists to prevent.
         """
         if isinstance(value, float):  # type: ignore[unreachable]
-            raise TypeError("Money.parse rejects float; pass a decimal string such as '0.10'")
+            raise TypeConstraintError(
+                "Money.parse rejects float; pass a decimal string such as '0.10'"
+            )
         if not isinstance(value, str):
-            raise TypeError(f"Money.parse expects a string, got {type(value).__name__}")
+            raise TypeConstraintError(f"Money.parse expects a string, got {type(value).__name__}")
         try:
             amount = Decimal(value)
         except InvalidOperation:
-            raise ValueError(f"{value!r} is not a valid decimal") from None
+            raise ValidationError(f"{value!r} is not a valid decimal") from None
         return cls(amount, currency)
 
     @classmethod
@@ -83,7 +93,7 @@ class Money:
 
     def _same_currency(self, other: Money) -> None:
         if self.currency != other.currency:
-            raise ValueError(
+            raise CurrencyMismatchError(
                 f"cannot combine different currency values: {self.currency} and {other.currency}"
             )
 
@@ -108,11 +118,13 @@ class Money:
         is quantised once, at the boundary where it is displayed or persisted.
         """
         if isinstance(factor, float):
-            raise TypeError("Money cannot be scaled by a float; use Decimal for exact factors")
+            raise TypeConstraintError(
+                "Money cannot be scaled by a float; use Decimal for exact factors"
+            )
         if isinstance(factor, Money):  # type: ignore[unreachable]
-            raise TypeError("multiplying Money by Money has no meaning in this domain")
+            raise TypeConstraintError("multiplying Money by Money has no meaning in this domain")
         if not isinstance(factor, Decimal | int):
-            raise TypeError(
+            raise TypeConstraintError(
                 f"Money can only be scaled by Decimal or int, got {type(factor).__name__}"
             )
         return Money(self.amount * factor, self.currency)
@@ -161,12 +173,12 @@ class Money:
         integral_weights = _validate_weights(weights)
         total_weight = sum(integral_weights)
         if total_weight <= 0:
-            raise ValueError("allocation weights must sum to a positive value")
+            raise AllocationError("allocation weights must sum to a positive value")
 
         quantum = Decimal(1).scaleb(-places)
         scaled = abs(self.amount) / quantum
         if scaled != scaled.to_integral_value():
-            raise ValueError(
+            raise AllocationError(
                 f"cannot allocate {self} exactly at {places} decimal places; "
                 f"quantise it with a RoundingPolicy first"
             )
@@ -201,21 +213,23 @@ def _validate_weights(weights: Sequence[Decimal | int]) -> list[int]:
     allocation can run in integer arithmetic.
     """
     if not weights:
-        raise ValueError("allocate requires at least one weight")
+        raise AllocationError("allocate requires at least one weight")
 
     decimals: list[Decimal] = []
     for weight in weights:
         if isinstance(weight, float):
-            raise TypeError("allocation weights reject float; use Decimal or int for exact ratios")
+            raise TypeConstraintError(
+                "allocation weights reject float; use Decimal or int for exact ratios"
+            )
         if not isinstance(weight, Decimal | int):
-            raise TypeError(
+            raise TypeConstraintError(
                 f"allocation weights must be Decimal or int, got {type(weight).__name__}"
             )
         as_decimal = Decimal(weight)
         if not as_decimal.is_finite():
-            raise ValueError(f"allocation weights must be finite, got {weight}")
+            raise AllocationError(f"allocation weights must be finite, got {weight}")
         if as_decimal < 0:
-            raise ValueError(f"allocation weights cannot be negative, got {weight}")
+            raise AllocationError(f"allocation weights cannot be negative, got {weight}")
         decimals.append(as_decimal)
 
     max_places = max(max(-value.as_tuple().exponent, 0) for value in decimals)  # type: ignore[operator]

@@ -17,6 +17,8 @@ from dataclasses import dataclass
 from decimal import ROUND_HALF_EVEN, ROUND_HALF_UP, Decimal
 from typing import Final, Protocol, runtime_checkable
 
+from offerdelta.domain.common.errors import TypeConstraintError
+
 # Money.allocate splits to this many places by default. Defined here so the
 # allocation scale and the currency display scale cannot drift apart.
 ALLOCATION_PLACES: Final = 2
@@ -49,12 +51,12 @@ class DecimalPlaces:
         if isinstance(value, float):  # type: ignore[unreachable]
             # Same reasoning as Money: the annotation rejects a float for
             # callers mypy can see, and this catches the ones it cannot.
-            raise TypeError(
+            raise TypeConstraintError(
                 "rounding rejects float; binary floating point cannot represent "
                 "decimal currency exactly"
             )
         if not isinstance(value, Decimal):
-            raise TypeError(f"rounding expects Decimal, got {type(value).__name__}")
+            raise TypeConstraintError(f"rounding expects Decimal, got {type(value).__name__}")
         return value.quantize(Decimal(1).scaleb(-self.places), rounding=self.rounding)
 
 

@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from enum import StrEnum
 
+from offerdelta.domain.common.errors import PeriodMismatchError, ValidationError
 from offerdelta.domain.common.money import Money
 
 _MONTHS_PER_YEAR = 12
@@ -72,7 +73,7 @@ class PeriodicAmount:
 
     def _require_convertible(self) -> None:
         if self.period not in _CONVERTIBLE:
-            raise ValueError(
+            raise ValidationError(
                 f"a {self.period} amount describes an event or an accumulated "
                 f"total, not a rate, so it cannot be converted between periods"
             )
@@ -100,14 +101,14 @@ class PeriodicAmount:
 
     def __add__(self, other: PeriodicAmount) -> PeriodicAmount:
         if self.period is not other.period:
-            raise ValueError(
+            raise PeriodMismatchError(
                 f"cannot add amounts of different periods: {self.period} and {other.period}"
             )
         return PeriodicAmount(self.money + other.money, self.period)
 
     def __sub__(self, other: PeriodicAmount) -> PeriodicAmount:
         if self.period is not other.period:
-            raise ValueError(
+            raise PeriodMismatchError(
                 f"cannot subtract amounts of different periods: {self.period} and {other.period}"
             )
         return PeriodicAmount(self.money - other.money, self.period)
