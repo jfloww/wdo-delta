@@ -47,6 +47,16 @@ class CostItem:
     #: and rarely split a gym membership.
     is_shared: bool = False
 
+    #: When this cost stops applying, exclusive. Used for a cost the candidate
+    #: side inherits from the current one up to the move date — you still pay
+    #: rent somewhere before you move.
+    ends_before: date | None = None
+
+    #: True when this item stands in for the current side's cost rather than
+    #: describing the candidate's own, so a derivation can say where it came
+    #: from instead of presenting it as part of the offer.
+    is_inherited: bool = False
+
     def __post_init__(self) -> None:
         if self.amount.money.amount < 0:
             raise ValidationError(

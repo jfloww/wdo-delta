@@ -51,6 +51,10 @@ class CostImpact:
     wealth_amount: Money = field(default_factory=Money.zero)
     time_hours: Decimal = Decimal(0)
 
+    #: When this impact stops applying, exclusive. Set for a cost inherited
+    #: from the other side up to a move date; None means it runs to the horizon.
+    ends_before: date | None = None
+
     inputs: tuple[InputRef, ...] = ()
     rounding_policy: str | None = None
     rule_version: str | None = None

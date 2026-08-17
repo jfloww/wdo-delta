@@ -14,7 +14,8 @@ every downstream reader from having to guess.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from datetime import date
 from decimal import Decimal
 from typing import Final
 
@@ -27,6 +28,7 @@ from offerdelta.domain.comparisons.engine import (
     default_calculators,
 )
 from offerdelta.domain.comparisons.impacts import CostImpact
+from offerdelta.domain.comparisons.pre_move import inherit_costs_until_move
 
 _MONTHS_PER_YEAR: Final = 12
 
@@ -70,8 +72,27 @@ class ComparisonResult:
         )[:count]
 
 
-def compare(*, current: CalculationContext, candidate: CalculationContext) -> ComparisonResult:
-    """Calculate both sides and report the difference."""
+def compare(
+    *,
+    current: CalculationContext,
+    candidate: CalculationContext,
+    move_date: date | None = None,
+) -> ComparisonResult:
+    """Calculate both sides and report the difference.
+
+    When `move_date` is given, the candidate inherits the current side's
+    recurring costs up to that date. Without it, a candidate whose costs all
+    begin at the move would spend the intervening months paying nothing at all —
+    an artificial saving large enough to invert the answer.
+    """
+    if move_date is not None:
+        candidate = replace(
+            candidate,
+            costs=inherit_costs_until_move(
+                current=current.costs, candidate=candidate.costs, move_date=move_date
+            ),
+        )
+
     engine = ComparisonEngine(default_calculators())
     current_result = engine.calculate(current)
     candidate_result = engine.calculate(candidate)

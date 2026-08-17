@@ -63,7 +63,14 @@ class CostItemCalculator:
         return CostImpact(
             # Several items can share a category — two subscriptions, say — so
             # the index keeps codes unique and the derivation shows them apart.
-            code=f"{item.category.value.lower()}_{index}",
+            # Inherited stand-ins get their own code so they never collide with
+            # the candidate's own cost in the same category.
+            code=(
+                f"{item.category.value.lower()}_inherited_{index}"
+                if item.is_inherited
+                else f"{item.category.value.lower()}_{index}"
+            ),
+            ends_before=item.ends_before,
             label=_humanise(item.category),
             category=item.category,
             produced_by=self.name,

@@ -179,6 +179,10 @@ class ComparisonEngine:
         for impact in impacts:
             if impact.period is PeriodKind.HORIZON_CUMULATIVE:
                 continue  # wealth totals are not a monthly cash flow
+            if impact.ends_before is not None and month_start >= impact.ends_before:
+                # An inherited cost stops the month the replacement starts,
+                # otherwise both would be charged after the move.
+                continue
             if impact.period is PeriodKind.ONE_TIME:
                 # Lands in the month containing its effective date, or the first
                 # month if it predates the horizon.
@@ -216,6 +220,7 @@ class ComparisonEngine:
             cash_amount=cls._monthly_amount(impact),
             wealth_amount=impact.wealth_amount,
             time_hours=impact.time_hours,
+            ends_before=impact.ends_before,
             inputs=impact.inputs,
             rounding_policy=impact.rounding_policy,
             rule_version=impact.rule_version,
