@@ -9,7 +9,9 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /app
 
-COPY --from=ghcr.io/astral-sh/uv:0.12 /uv /usr/local/bin/uv
+# Pinned to an exact patch so the image is reproducible, matching the uv that
+# produced uv.lock. A floating minor tag would silently change the resolver.
+COPY --from=ghcr.io/astral-sh/uv:0.12.5 /uv /usr/local/bin/uv
 
 # Dependencies first, so a source change does not invalidate the install layer.
 # --frozen installs exactly what uv.lock pins; the build fails rather than
