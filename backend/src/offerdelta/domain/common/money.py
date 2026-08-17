@@ -16,6 +16,8 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import Final
 
+from offerdelta.domain.common.rounding import ALLOCATION_PLACES, RoundingPolicy
+
 _ISO_4217_LENGTH: Final = 3
 
 
@@ -133,7 +135,17 @@ class Money:
         self._same_currency(other)
         return self.amount >= other.amount
 
-    def allocate(self, weights: Sequence[Decimal | int], places: int = 2) -> list[Money]:
+    def quantize(self, policy: RoundingPolicy) -> Money:
+        """Reduce to a presentable scale under an explicit, named policy.
+
+        The only place rounding is allowed to happen. Arithmetic keeps full
+        precision so that quantising once at a boundary cannot compound.
+        """
+        return Money(policy.quantize(self.amount), self.currency)
+
+    def allocate(
+        self, weights: Sequence[Decimal | int], places: int = ALLOCATION_PLACES
+    ) -> list[Money]:
         """Split this amount across weighted shares without losing a unit.
 
         Uses largest remainder: every share is floored to the quantum, then the
