@@ -15,6 +15,8 @@ library version might change.
 
 from __future__ import annotations
 
+from datetime import date
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from offerdelta.domain.comparisons.derivation import DerivationNode
@@ -46,6 +48,19 @@ class DerivationNodeSchema(BaseModel):
             evidence=str(node.evidence),
             children=tuple(cls.of(child) for child in node.children),
         )
+
+
+class ComparisonRequest(BaseModel):
+    """What to compare, and over how long."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    horizon_months: int = Field(default=12, ge=1, le=120, description="Whole months to project.")
+
+    #: Null runs the comparison without inheriting pre-move costs — the
+    #: behaviour before that gap was closed, kept reproducible rather than only
+    #: described.
+    move_date: date | None = Field(default=date(2026, 7, 1))
 
 
 class ComponentDeltaSchema(BaseModel):

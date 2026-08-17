@@ -78,7 +78,7 @@ class ComparisonView:
     negotiation_error: str | None
 
 
-def _context(side: ComparisonSide) -> CalculationContext:
+def _context(side: ComparisonSide, horizon_months: int) -> CalculationContext:
     """Build a calculation context from a comparison side.
 
     The tax model is calibrated on the profile's own salary. Milestone 5
@@ -95,20 +95,36 @@ def _context(side: ComparisonSide) -> CalculationContext:
             observed_net=PeriodicAmount(salary * ASSUMED_NET_SHARE, PeriodKind.ANNUAL),
             marginal_rate=Percentage.from_percent(ASSUMED_MARGINAL_RATE),
         ),
-        horizon=DateRange.of_months(HORIZON_START, HORIZON_MONTHS),
+        horizon=DateRange.of_months(HORIZON_START, horizon_months),
     )
 
 
-def get_demo_comparison() -> ComparisonView:
-    """Run the full Auburn-to-New-Jersey comparison."""
-    current = _context(auburn_current())
-    candidate = _context(new_jersey_candidate())
+def get_demo_comparison(
+    *,
+    horizon_months: int = HORIZON_MONTHS,
+    move_date: date | None = MOVE_DATE,
+) -> ComparisonView:
+    """Run the full Auburn-to-New-Jersey comparison.
 
-    result = compare(current=current, candidate=candidate, move_date=MOVE_DATE)
+    `move_date` may be None to see the comparison without inherited pre-move
+    costs — which is what the engine did before that gap was closed, and worth
+    being able to reproduce rather than only describe.
+    """
+    if horizon_months < 1:
+        raise ValidationError(
+            f"a comparison horizon must span at least one month, got {horizon_months}"
+        )
+
+    current = _context(auburn_current(), horizon_months)
+    candidate = _context(new_jersey_candidate(), horizon_months)
+
+    result = compare(current=current, candidate=candidate, move_date=move_date)
 
     # The solvers see the same inherited-cost candidate the comparison used, so
     # their answers describe the profile the user is actually looking at.
-    solved_candidate = _with_inherited_costs(current, candidate)
+    solved_candidate = (
+        candidate if move_date is None else _with_inherited_costs(current, candidate, move_date)
+    )
 
     equivalent, equivalent_error = _try_equivalent_salary(current, solved_candidate)
     negotiation, negotiation_error = _try_negotiation(current, solved_candidate)
@@ -116,7 +132,7 @@ def get_demo_comparison() -> ComparisonView:
     return ComparisonView(
         current_label=current.employment.label,
         candidate_label=candidate.employment.label,
-        horizon_months=HORIZON_MONTHS,
+        horizon_months=horizon_months,
         comparison=result,
         current_derivation=build_derivation(
             result.current, label=f"{current.employment.label} — first-year cash"
@@ -133,12 +149,12 @@ def get_demo_comparison() -> ComparisonView:
 
 
 def _with_inherited_costs(
-    current: CalculationContext, candidate: CalculationContext
+    current: CalculationContext, candidate: CalculationContext, move_date: date
 ) -> CalculationContext:
     return replace(
         candidate,
         costs=inherit_costs_until_move(
-            current=current.costs, candidate=candidate.costs, move_date=MOVE_DATE
+            current=current.costs, candidate=candidate.costs, move_date=move_date
         ),
     )
 

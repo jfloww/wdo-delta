@@ -9,28 +9,38 @@ The real API arrives in milestone 5.
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
-from typing import Final
+from typing import Annotated, Final
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Header, HTTPException, Response
 from fastapi.responses import FileResponse
 
 from offerdelta.api.presenters import present_comparison
 from offerdelta.api.schemas import (
+    ComparisonRequest,
     ComparisonSchema,
     DerivationNodeSchema,
     HealthSchema,
     VersionSchema,
 )
+from offerdelta.application.idempotency import IdempotencyOutcome, IdempotencyService
 from offerdelta.application.queries.get_demo_comparison import get_demo_comparison
 from offerdelta.application.queries.get_demo_derivation import get_demo_derivation
+from offerdelta.domain.common.errors import ValidationError
+from offerdelta.infrastructure.memory.idempotency import InMemoryIdempotencyStore
 
 #: Bumped whenever a calculation rule changes. Every result will reference it
 #: once results are persisted, so a stored figure stays reproducible.
 ENGINE_VERSION: Final = "0.1.0-skeleton"
 
 _STATIC = Path(__file__).parent / "static"
+
+#: Process-local, so it guards a single instance. Honest for one container and
+#: inadequate for two, which is why it sits behind a port — DynamoDB with
+#: conditional writes replaces it when the async path arrives.
+_idempotency = IdempotencyService(InMemoryIdempotencyStore())
 
 app = FastAPI(
     title="OfferDelta",
@@ -97,3 +107,57 @@ def demo_comparison() -> ComparisonSchema:
     it is surfaced so a reader can see the guarantee rather than trust it.
     """
     return present_comparison(get_demo_comparison())
+
+
+@app.post("/v1/comparisons", status_code=201, response_model=ComparisonSchema)
+def run_comparison(
+    request: ComparisonRequest,
+    response: Response,
+    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
+) -> Response:
+    """Run a comparison over the demo profiles.
+
+    Guarded by the standard idempotency contract. A retry with the same key and
+    the same body replays the original response byte for byte and sets
+    `Idempotent-Replay: true`; the same key with a different body is a `409`,
+    because reusing a key for different content is a client bug that should
+    surface rather than silently return the first answer.
+    """
+    body = request.model_dump(mode="json")
+    now = datetime.now(UTC)
+
+    outcome = _idempotency.begin(key=idempotency_key, body=body, now=now)
+
+    if outcome.kind is IdempotencyOutcome.Kind.CONFLICT:
+        raise HTTPException(status_code=409, detail=outcome.reason)
+
+    if outcome.kind is IdempotencyOutcome.Kind.REPLAY:
+        return Response(
+            content=outcome.response,
+            status_code=200,
+            media_type="application/json",
+            headers={"Idempotent-Replay": "true"},
+        )
+
+    try:
+        view = get_demo_comparison(
+            horizon_months=request.horizon_months,
+            move_date=request.move_date,
+        )
+        payload = present_comparison(view).model_dump_json()
+    except ValidationError as error:
+        # Release the key: the caller's reason for retrying is that this did not
+        # finish, and holding it would make a corrected retry impossible.
+        if idempotency_key is not None:
+            _idempotency.abandon(key=idempotency_key)
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    except Exception:
+        if idempotency_key is not None:
+            _idempotency.abandon(key=idempotency_key)
+        raise
+
+    if idempotency_key is not None:
+        _idempotency.complete(key=idempotency_key, response=payload)
+
+    response.status_code = 201
+    return Response(content=payload, status_code=201, media_type="application/json")
