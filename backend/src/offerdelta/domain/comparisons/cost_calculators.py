@@ -71,7 +71,14 @@ class CostItemCalculator:
                 else f"{item.category.value.lower()}_{index}"
             ),
             ends_before=item.ends_before,
-            label=_humanise(item.category),
+            # An inherited item and the candidate's own cost share a category, so
+            # without this the breakdown shows "Rent or mortgage" twice with
+            # different amounts and no way to tell which is which.
+            label=(
+                f"{_humanise(item.category)} (before move)"
+                if item.is_inherited
+                else _humanise(item.category)
+            ),
             category=item.category,
             produced_by=self.name,
             period=item.amount.period,

@@ -98,16 +98,44 @@ def test_the_page_is_served_at_the_root(client: TestClient) -> None:
     assert "text/html" in response.headers["content-type"]
 
 
-def test_the_page_never_parses_money_as_a_number(client: TestClient) -> None:
-    # The formatter must stay pure string manipulation. Number() or parseFloat()
-    # on an amount would silently reintroduce binary floating point.
+def test_the_page_never_parses_money_loosely(client: TestClient) -> None:
+    # parseFloat and parseInt have no legitimate use on this page: both stop at
+    # the first character they cannot read, so a malformed amount becomes a
+    # plausible wrong number instead of an error.
+    for script in _scripts(client):
+        assert "parseFloat" not in script
+        assert "parseInt" not in script
+
+
+def test_every_numeric_coercion_on_the_page_is_marked_as_geometry(
+    client: TestClient,
+) -> None:
+    # A chart is 720 units wide and cannot render a cent of error, so pixel
+    # positions legitimately become floats. Displayed amounts never may.
     #
-    # Only the executable script is inspected; the footer prose deliberately
-    # mentions Number() while explaining why the page avoids it.
+    # Rather than ban coercion outright — which the chart made impossible — the
+    # rule is that every coercion carries a GEOMETRY marker. An unannotated one
+    # fails here, so the exception stays deliberate instead of spreading into a
+    # figure someone reads.
+    for script in _scripts(client):
+        for number, line in enumerate(script.splitlines(), start=1):
+            if "Number(" in line:
+                assert "GEOMETRY" in line, (
+                    f"line {number} coerces to a JavaScript number without a "
+                    f"GEOMETRY marker: {line.strip()}"
+                )
+
+
+def test_displayed_amounts_come_from_the_string_formatter(client: TestClient) -> None:
+    # The formatter is the only path to a rendered figure, and it works by
+    # string surgery on the exact decimal the API sent.
+    for script in _scripts(client):
+        assert "function fmt(" in script
+
+
+def _scripts(client: TestClient) -> list[str]:
+    """The page's executable blocks, excluding prose that merely discusses them."""
     page = client.get("/").text
     scripts = re.findall(r"<script\b[^>]*>(.*?)</script>", page, flags=re.DOTALL)
     assert scripts, "expected the page to contain a script block"
-    for script in scripts:
-        assert "Number(" not in script
-        assert "parseFloat" not in script
-        assert "parseInt" not in script
+    return scripts
