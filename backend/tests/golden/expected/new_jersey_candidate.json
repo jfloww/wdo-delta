@@ -12,7 +12,8 @@
         "cash_flow_type": "RECURRING_CASH",
         "category": "HOUSING_RENT_OR_MORTGAGE",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -25,7 +26,8 @@
         "cash_flow_type": "RECURRING_CASH",
         "category": "HOUSING_UTILITIES",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -38,7 +40,8 @@
         "cash_flow_type": "RECURRING_CASH",
         "category": "HOUSING_INTERNET",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -51,7 +54,8 @@
         "cash_flow_type": "RECURRING_CASH",
         "category": "HOUSING_RENTERS_INSURANCE",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -64,7 +68,8 @@
         "cash_flow_type": "RECURRING_CASH",
         "category": "HEALTH_OUT_OF_POCKET",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -77,7 +82,8 @@
         "cash_flow_type": "RECURRING_CASH",
         "category": "COMMUTE_TRANSIT_FARE",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -90,7 +96,8 @@
         "cash_flow_type": "RECURRING_CASH",
         "category": "LIVING_GROCERY",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -103,7 +110,8 @@
         "cash_flow_type": "RECURRING_CASH",
         "category": "LIVING_DINING",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -116,7 +124,8 @@
         "cash_flow_type": "RECURRING_CASH",
         "category": "LIVING_PHONE",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -129,7 +138,8 @@
         "cash_flow_type": "RECURRING_CASH",
         "category": "LIVING_VEHICLE_FIXED",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -142,7 +152,8 @@
         "cash_flow_type": "RECURRING_CASH",
         "category": "LIVING_GYM",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -155,7 +166,8 @@
         "cash_flow_type": "RECURRING_CASH",
         "category": "LIVING_SUBSCRIPTIONS",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -168,7 +180,8 @@
         "cash_flow_type": "RECURRING_CASH",
         "category": "LIVING_ENTERTAINMENT",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -181,7 +194,8 @@
         "cash_flow_type": "RECURRING_CASH",
         "category": "LIVING_TRAVEL",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -194,7 +208,8 @@
         "cash_flow_type": "RECURRING_CASH",
         "category": "LIVING_OTHER",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -207,7 +222,8 @@
         "cash_flow_type": "ONE_TIME_CASH",
         "category": "RELOCATION_MOVE",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -220,7 +236,8 @@
         "cash_flow_type": "ONE_TIME_CASH",
         "category": "RELOCATION_DEPOSIT",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -233,7 +250,8 @@
         "cash_flow_type": "ONE_TIME_CASH",
         "category": "RELOCATION_BROKER_FEE",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       },
       {
         "amount": {
@@ -246,7 +264,8 @@
         "cash_flow_type": "ONE_TIME_CASH",
         "category": "RELOCATION_FURNISHING",
         "effective_date": "2026-07-01",
-        "evidence": "ASSUMED"
+        "evidence": "ASSUMED",
+        "is_shared": false
       }
     ]
   },

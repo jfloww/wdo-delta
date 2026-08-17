@@ -41,6 +41,12 @@ class CostItem:
     effective_date: date
     evidence: Evidence
 
+    #: Whether the household splits this cost. Set per item rather than per
+    #: category, because shareability describes the arrangement rather than the
+    #: kind of cost: two people usually split rent, sometimes split groceries,
+    #: and rarely split a gym membership.
+    is_shared: bool = False
+
     def __post_init__(self) -> None:
         if self.amount.money.amount < 0:
             raise ValidationError(
