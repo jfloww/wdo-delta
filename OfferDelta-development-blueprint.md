@@ -275,8 +275,9 @@ SEMIMONTHLY  -> 24 periods per year
 MONTHLY      -> 12 periods per year
 ```
 
-Biweekly is 26 periods, not 24, and the two are not interchangeable. Treating a biweekly salary as
-semimonthly overstates annual pay by roughly 8 percent.
+Biweekly is 26 periods, not 24, and the two are not interchangeable. Reading a biweekly paycheck as
+semimonthly drops two periods and **understates** annual pay by about 7.7 percent; the reverse
+mistake overstates it by about 8.3 percent.
 
 ### 6.2 Disposable cash
 
