@@ -16,7 +16,14 @@ from typing import Final
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 
-from offerdelta.api.schemas import DerivationNodeSchema, HealthSchema, VersionSchema
+from offerdelta.api.presenters import present_comparison
+from offerdelta.api.schemas import (
+    ComparisonSchema,
+    DerivationNodeSchema,
+    HealthSchema,
+    VersionSchema,
+)
+from offerdelta.application.queries.get_demo_comparison import get_demo_comparison
 from offerdelta.application.queries.get_demo_derivation import get_demo_derivation
 
 #: Bumped whenever a calculation rule changes. Every result will reference it
@@ -76,3 +83,17 @@ def demo_derivation() -> DerivationNodeSchema:
     All amounts are decimal strings. Do not parse them as JavaScript numbers.
     """
     return DerivationNodeSchema.of(get_demo_derivation())
+
+
+@app.get("/v1/demo/comparison", response_model=ComparisonSchema)
+def demo_comparison() -> ComparisonSchema:
+    """The full Auburn-to-New-Jersey comparison.
+
+    Component deltas, both derivation trees, the cumulative series, and all
+    three solvers. Every amount is a decimal string.
+
+    `reconciled` reports whether every projected month balanced on both sides.
+    The engine refuses to return an unbalanced result, so it is always true —
+    it is surfaced so a reader can see the guarantee rather than trust it.
+    """
+    return present_comparison(get_demo_comparison())
