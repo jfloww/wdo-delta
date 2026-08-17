@@ -1,0 +1,324 @@
+{
+  "costs": {
+    "items": [
+      {
+        "amount": {
+          "money": {
+            "amount": "1150.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "HOUSING_RENT_OR_MORTGAGE",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "145.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "HOUSING_UTILITIES",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "60.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "HOUSING_INTERNET",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "18.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "HOUSING_RENTERS_INSURANCE",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "70.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "HEALTH_OUT_OF_POCKET",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "95.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "COMMUTE_FUEL",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "45.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "COMMUTE_VEHICLE_WEAR",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "420.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_GROCERY",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "180.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_DINING",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "55.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_PHONE",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "125.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_VEHICLE_FIXED",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "35.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_GYM",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "45.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_SUBSCRIPTIONS",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "90.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_ENTERTAINMENT",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "150.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_TRAVEL",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "80.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_OTHER",
+        "effective_date": "2026-01-01",
+        "evidence": "ASSUMED"
+      }
+    ]
+  },
+  "employment": {
+    "benefits": {
+      "employee_contribution_rate": {
+        "fraction": "0.06"
+      },
+      "employee_health_premium": {
+        "money": {
+          "amount": "165.00",
+          "currency": "USD"
+        },
+        "period": "MONTHLY"
+      },
+      "employee_hsa_fsa_contribution": {
+        "money": {
+          "amount": "1440.00",
+          "currency": "USD"
+        },
+        "period": "ANNUAL"
+      },
+      "employer_hsa_contribution": {
+        "money": {
+          "amount": "750.00",
+          "currency": "USD"
+        },
+        "period": "ANNUAL"
+      },
+      "paid_holidays": 10,
+      "pto_days": 15,
+      "retirement_match": {
+        "match_limit_rate": {
+          "fraction": "0.04"
+        },
+        "match_rate": {
+          "fraction": "1"
+        },
+        "vesting_months": 24
+      }
+    },
+    "compensation": {
+      "base_salary": {
+        "amount": "78000.00",
+        "currency": "USD"
+      },
+      "equity": null,
+      "expected_annual_raise": {
+        "fraction": "0.03"
+      },
+      "pay_frequency": "BIWEEKLY",
+      "relocation_reimbursement": null,
+      "signing_bonus": null,
+      "target_bonus": null
+    },
+    "filing_status": "SINGLE",
+    "label": "Current - Auburn, AL",
+    "net_pay_override": {
+      "basis": {
+        "base_salary": {
+          "amount": "78000.00",
+          "currency": "USD"
+        },
+        "employee_health_premium": {
+          "amount": "1980.00",
+          "currency": "USD"
+        },
+        "filing_status": "SINGLE",
+        "hsa_fsa_contribution": {
+          "amount": "1440.00",
+          "currency": "USD"
+        },
+        "pay_frequency": "BIWEEKLY",
+        "pretax_401k_contribution": {
+          "amount": "4680.0000",
+          "currency": "USD"
+        },
+        "residence_jurisdiction": "US-AL",
+        "work_jurisdiction": "US-AL"
+      },
+      "captured_at": "2026-08-01",
+      "observed_net_pay": {
+        "money": {
+          "amount": "4820.00",
+          "currency": "USD"
+        },
+        "period": "MONTHLY"
+      }
+    },
+    "residence": {
+      "country": "US",
+      "locality": "Auburn",
+      "state": "AL"
+    },
+    "schedule": {
+      "annual_working_weeks": "48",
+      "one_way_commute_minutes": "15",
+      "onsite_days_per_week": "3",
+      "weekly_work_hours": "40"
+    },
+    "tax_year": 2026,
+    "work_location": {
+      "country": "US",
+      "locality": "Auburn",
+      "state": "AL"
+    }
+  },
+  "household": {
+    "method": "EVEN",
+    "size": 1,
+    "user_fixed_amount": null,
+    "user_weight": null
+  }
+}

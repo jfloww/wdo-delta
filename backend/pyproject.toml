@@ -60,8 +60,16 @@ ignore = [
     "PLR0913",   # many arguments: financial models legitimately have many fields
 ]
 
+[tool.ruff.lint.isort]
+# `tests` is our own code, so it sorts with `offerdelta` rather than being
+# mistaken for a third-party package.
+known-first-party = ["offerdelta", "tests"]
+
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["PLR2004"]  # magic values are the point of a test
+"tests/**" = [
+    "PLR2004",  # magic values are the point of a test
+    "PLR0911",  # serialisation helpers dispatch on type; a return chain is clearest
+]
 
 # ---------------------------------------------------------------- mypy
 

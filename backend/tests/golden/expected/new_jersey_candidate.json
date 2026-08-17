@@ -1,0 +1,358 @@
+{
+  "costs": {
+    "items": [
+      {
+        "amount": {
+          "money": {
+            "amount": "2850.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "HOUSING_RENT_OR_MORTGAGE",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "165.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "HOUSING_UTILITIES",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "70.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "HOUSING_INTERNET",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "22.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "HOUSING_RENTERS_INSURANCE",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "85.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "HEALTH_OUT_OF_POCKET",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "182.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "COMMUTE_TRANSIT_FARE",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "520.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_GROCERY",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "320.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_DINING",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "55.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_PHONE",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "0.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_VEHICLE_FIXED",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "85.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_GYM",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "45.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_SUBSCRIPTIONS",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "180.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_ENTERTAINMENT",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "200.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_TRAVEL",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "110.00",
+            "currency": "USD"
+          },
+          "period": "MONTHLY"
+        },
+        "cash_flow_type": "RECURRING_CASH",
+        "category": "LIVING_OTHER",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "3200.00",
+            "currency": "USD"
+          },
+          "period": "ONE_TIME"
+        },
+        "cash_flow_type": "ONE_TIME_CASH",
+        "category": "RELOCATION_MOVE",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "5700.00",
+            "currency": "USD"
+          },
+          "period": "ONE_TIME"
+        },
+        "cash_flow_type": "ONE_TIME_CASH",
+        "category": "RELOCATION_DEPOSIT",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "4275.00",
+            "currency": "USD"
+          },
+          "period": "ONE_TIME"
+        },
+        "cash_flow_type": "ONE_TIME_CASH",
+        "category": "RELOCATION_BROKER_FEE",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      },
+      {
+        "amount": {
+          "money": {
+            "amount": "2500.00",
+            "currency": "USD"
+          },
+          "period": "ONE_TIME"
+        },
+        "cash_flow_type": "ONE_TIME_CASH",
+        "category": "RELOCATION_FURNISHING",
+        "effective_date": "2026-07-01",
+        "evidence": "ASSUMED"
+      }
+    ]
+  },
+  "employment": {
+    "benefits": {
+      "employee_contribution_rate": {
+        "fraction": "0.06"
+      },
+      "employee_health_premium": {
+        "money": {
+          "amount": "210.00",
+          "currency": "USD"
+        },
+        "period": "MONTHLY"
+      },
+      "employee_hsa_fsa_contribution": {
+        "money": {
+          "amount": "1440.00",
+          "currency": "USD"
+        },
+        "period": "ANNUAL"
+      },
+      "employer_hsa_contribution": {
+        "money": {
+          "amount": "1000.00",
+          "currency": "USD"
+        },
+        "period": "ANNUAL"
+      },
+      "paid_holidays": 11,
+      "pto_days": 20,
+      "retirement_match": {
+        "match_limit_rate": {
+          "fraction": "0.06"
+        },
+        "match_rate": {
+          "fraction": "0.5"
+        },
+        "vesting_months": 36
+      }
+    },
+    "compensation": {
+      "base_salary": {
+        "amount": "135000.00",
+        "currency": "USD"
+      },
+      "equity": {
+        "cliff_months": 12,
+        "estimated_withholding_rate": {
+          "fraction": "0.3"
+        },
+        "total_value": {
+          "amount": "96000.00",
+          "currency": "USD"
+        },
+        "vesting_months": 48
+      },
+      "expected_annual_raise": {
+        "fraction": "0.04"
+      },
+      "pay_frequency": "BIWEEKLY",
+      "relocation_reimbursement": {
+        "amount": "8000.00",
+        "currency": "USD"
+      },
+      "signing_bonus": {
+        "amount": {
+          "amount": "15000.00",
+          "currency": "USD"
+        },
+        "repayment_months": 12
+      },
+      "target_bonus": {
+        "probability": {
+          "fraction": "0.7"
+        },
+        "rate": {
+          "fraction": "0.12"
+        }
+      }
+    },
+    "filing_status": "SINGLE",
+    "label": "Candidate - Jersey City, NJ (works NYC)",
+    "net_pay_override": null,
+    "residence": {
+      "country": "US",
+      "locality": "Jersey City",
+      "state": "NJ"
+    },
+    "schedule": {
+      "annual_working_weeks": "48",
+      "one_way_commute_minutes": "55",
+      "onsite_days_per_week": "3",
+      "weekly_work_hours": "45"
+    },
+    "tax_year": 2026,
+    "work_location": {
+      "country": "US",
+      "locality": "New York City",
+      "state": "NY"
+    }
+  },
+  "household": {
+    "method": "EVEN",
+    "size": 1,
+    "user_fixed_amount": null,
+    "user_weight": null
+  }
+}
