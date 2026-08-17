@@ -7,22 +7,25 @@ costs, and commuting cash and time.
 > What salary in the target location would preserve my current standard of living, when would the
 > move break even, and which offer terms would close the remaining gap?
 
-**Live demo:** _not yet deployed — the URL goes here once the Render service is live._
+**Live demo: [offerdelta.onrender.com](https://offerdelta.onrender.com)**
+
+Hosted on Render's free plan, so the first request after a quiet period takes about 30 seconds
+while the service wakes.
 
 ---
 
 ## Status
 
-Phase 1, week 1. The walking skeleton is built and the calculation core is under test.
+Phase 1, week 1. Deployed, with the calculation core under test.
 
 | Milestone | State |
 |---|---|
 | M0 — tooling, CI, one-command checks | done |
 | M1 — domain primitives | done |
-| M0.5 — walking skeleton | built, awaiting first deploy |
-| M2 — employment and cost profiles | next |
+| M0.5 — walking skeleton, deployed | done |
+| M2 — employment and cost profiles | in progress |
 
-161 tests. Lint, types, architecture boundaries, and tests all run in one command.
+209 tests. Lint, types, architecture boundaries, and tests all run in one command.
 
 ---
 
