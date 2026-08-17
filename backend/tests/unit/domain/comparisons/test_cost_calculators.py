@@ -54,7 +54,7 @@ def _impacts(
     items: tuple[CostItem, ...],
     household: HouseholdProfile,
 ) -> tuple[CostImpact, ...]:
-    return CostItemCalculator(calculator).calculate(
+    return CostItemCalculator(calculator).calculate_from(
         costs=CostProfile(items=items), household=household
     )
 

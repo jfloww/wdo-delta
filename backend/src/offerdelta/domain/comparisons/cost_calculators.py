@@ -16,6 +16,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from offerdelta.domain.common.money import Money
+from offerdelta.domain.comparisons.context import CalculationContext
 from offerdelta.domain.comparisons.impacts import CostImpact, InputRef
 from offerdelta.domain.costs.categories import (
     CalculatorName,
@@ -35,7 +36,18 @@ class CostItemCalculator:
     def owned_categories(self) -> frozenset[CostCategory]:
         return categories_owned_by(self.name)
 
-    def calculate(self, costs: CostProfile, household: HouseholdProfile) -> tuple[CostImpact, ...]:
+    def calculate(self, context: CalculationContext) -> tuple[CostImpact, ...]:
+        """The `ComponentCalculator` entry point."""
+        return self.calculate_from(context.costs, context.household)
+
+    def calculate_from(
+        self, costs: CostProfile, household: HouseholdProfile
+    ) -> tuple[CostImpact, ...]:
+        """Cost routing needs only these two, so its own tests need only these two.
+
+        Kept separate from `calculate` so a unit test does not have to construct
+        an employment profile and a tax model to exercise a rent split.
+        """
         items = costs.items_for(self.name)
         return tuple(self._impact(item, household, index) for index, item in enumerate(items))
 
