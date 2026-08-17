@@ -52,3 +52,14 @@ class TaxModel(Protocol):
     def name(self) -> str: ...
 
     def after_tax_cash(self, gross: PeriodicAmount) -> TaxResult: ...
+
+    def after_tax_one_time(self, amount: Money) -> Money:
+        """Tax a single event such as a signing bonus.
+
+        Separate from `after_tax_cash` because a one-time payment is not a rate:
+        annualising it to find a bracket would be wrong, and in practice US
+        supplemental wages are withheld at their own flat rate rather than at
+        the recipient's marginal rate. Phase 1 approximates with the marginal
+        rate and says so; phase 2 applies the real supplemental rule.
+        """
+        ...

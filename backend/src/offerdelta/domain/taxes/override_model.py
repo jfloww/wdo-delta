@@ -123,6 +123,17 @@ class NetPayOverrideTaxModel:
             breakdown=None,
         )
 
+    def after_tax_one_time(self, amount: Money) -> Money:
+        """Tax a single event at the marginal rate.
+
+        An approximation, and a knowingly imperfect one: US supplemental wages
+        are withheld at a flat statutory rate rather than at the recipient's
+        marginal rate. Phase 2 applies the real rule. Using the marginal rate
+        here is closer than ignoring tax entirely, which would overstate every
+        signing bonus by a third.
+        """
+        return amount - self.marginal_rate.of(amount)
+
     def _distance_from_calibration(self, annual_gross: Money) -> Percentage:
         gap = abs((annual_gross - self._annual_gross).amount)
         return Percentage(gap / self._annual_gross.amount)
