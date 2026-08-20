@@ -30,3 +30,6 @@ out/
 
 # Project
 scratch/
+
+# Real annotation data stays local; the example file is committed as a template.
+backend/data/eval/transactions.csv
