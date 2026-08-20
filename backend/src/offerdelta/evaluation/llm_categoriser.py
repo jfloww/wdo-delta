@@ -32,6 +32,7 @@ from offerdelta.evaluation.dataset import LabelledTransaction
 from offerdelta.evaluation.labels import LABEL_SPACE
 from offerdelta.evaluation.providers import LLMProvider, LLMRequest
 from offerdelta.evaluation.rule_baseline import RuleBaseline
+from offerdelta.evaluation.usage import Usage
 
 #: Below this, a rule is a memorised coin flip and the model is worth its cost.
 DEFAULT_ROUTING_THRESHOLD: Final = Decimal("0.75")
@@ -100,6 +101,17 @@ class LLMCategoriser:
     def predict_many(self, records: Sequence[LabelledTransaction]) -> list[Prediction]:
         return [self.predict(record) for record in records]
 
+    def usage(self) -> Usage:
+        """What this run cost, in the report's vocabulary rather than a provider's."""
+        return Usage(
+            calls=len(self.latencies_ms),
+            input_tokens=self.input_tokens,
+            output_tokens=self.output_tokens,
+            latencies_ms=tuple(self.latencies_ms),
+            failures=self.provider_failures,
+            rejected_outputs=len(self.rejected_labels),
+        )
+
 
 @dataclass
 class HybridCategoriser:
@@ -157,3 +169,11 @@ class HybridCategoriser:
 
     def predict_many(self, records: Sequence[LabelledTransaction]) -> list[Prediction]:
         return [self.predict(record) for record in records]
+
+    def usage(self) -> Usage:
+        """The hybrid's cost is exactly the model calls it chose to make.
+
+        Delegating rather than tracking separately means the escalation rate and
+        the token count can never disagree about how often the model ran.
+        """
+        return self.llm.usage()
