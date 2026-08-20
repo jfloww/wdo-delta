@@ -152,6 +152,15 @@ class LabelledDataset:
     schema_version: str = SCHEMA_VERSION
 
     def __post_init__(self) -> None:
+        # A generator passed here would be consumed by the duplicate check
+        # below and read as empty ever after — a benchmark silently scoring
+        # zero rows. The annotation says tuple; this makes it true.
+        if not isinstance(self.records, tuple):
+            raise ValidationError(
+                f"records must be a tuple, got {type(self.records).__name__}; a "
+                f"generator would be exhausted on first read and leave the "
+                f"dataset silently empty"
+            )
         if not self.records:
             raise ValidationError("a dataset needs at least one record")
 

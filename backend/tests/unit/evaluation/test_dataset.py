@@ -243,3 +243,14 @@ def test_the_dataset_lists_its_merchants() -> None:
         records=(_record("t1", merchant="A"), _record("t2", merchant="B")),
     )
     assert ds.merchants == frozenset({"A", "B"})
+
+
+def test_a_generator_of_records_is_rejected() -> None:
+    # Caught in real use: a generator is consumed by the duplicate check and
+    # reads as empty ever after, so the benchmark silently scores zero rows and
+    # reports whatever that produces.
+    with pytest.raises(ValidationError, match="must be a tuple"):
+        LabelledDataset(
+            dataset_version="v1",
+            records=(_record(f"t{i}") for i in range(3)),  # type: ignore[arg-type]
+        )
