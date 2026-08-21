@@ -2,11 +2,17 @@
 
 > Target: 5 weeks part-time
 > Goal: a deployed, trustworthy, explainable comparison
-> Status: not started
+> Status: largely delivered — see the note below
 
 This document exists for one reason: to be the thing you check when you are tempted to build
-something interesting. The full design lives in `../../OfferDelta-development-blueprint.md`.
+something interesting. The full design lives in `../BLUEPRINT.md`.
 **This file outranks it for the next five weeks.**
+
+**Status note (2026-08-21).** M0 through M6 are delivered and deployed. Two gate items remain open:
+a non-developer cannot yet complete the flow, because there are no input forms. Work has since
+continued past this contract into transaction ingest, the categorisation taxonomy, and the
+evaluation harness — see the [README](../../README.md). This file is kept as the record of what the
+five-week contract actually said, not as a live plan.
 
 If it is not on the IN list below, it is out. Not "later in phase 1" — out.
 

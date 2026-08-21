@@ -43,8 +43,8 @@ _STATIC = Path(__file__).parent / "static"
 _idempotency = IdempotencyService(InMemoryIdempotencyStore())
 
 app = FastAPI(
-    title="OfferDelta",
-    summary="Personalized job offer and relocation decision engine",
+    title="Personal Finance Copilot",
+    summary="Deterministic personal-finance engine with AI kept outside the calculation boundary",
     docs_url="/docs",
 )
 

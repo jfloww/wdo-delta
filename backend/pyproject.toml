@@ -1,7 +1,7 @@
 [project]
 name = "offerdelta"
 version = "0.1.0"
-description = "Personalized job offer and relocation decision engine"
+description = "Personal Finance Copilot - deterministic finance engine with AI outside the calculation boundary"
 requires-python = ">=3.12"
 
 # The domain layer stays standard-library only (blueprint section 10.1); the
