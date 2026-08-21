@@ -246,6 +246,7 @@ backend/src/offerdelta/
   infrastructure/  postgres, llm client (transport, retry, structured output)
 docs/BLUEPRINT.md              full design and decision log
 docs/LIVE-VALIDATION.md        turning on live inference safely
+docs/status/                   dated progress notes and the running TODO
 docs/planning/PHASE-1-SCOPE.md scope contract
 ```
 

@@ -177,15 +177,16 @@ project is worth showing.
 
 Do not start phase 2 until all of these are true.
 
-- [ ] Live URL, reachable by someone who is not you
+- [x] Live URL, reachable by someone who is not you
 - [ ] A non-developer completed the Auburn-to-NJ comparison without help
-- [ ] Every result number expands to a derivation showing formula, inputs, and evidence
-- [ ] Reconciliation invariant passes for every month, every band, both sides
-- [ ] Property tests green, including allocation sum preservation and the break-even crossings
-- [ ] Changing a 401(k) contribution marks the override `STALE` and the API names the field
-- [ ] No monetary value crosses the API as a JSON number
-- [ ] `pyproject.toml` contains no AWS, LLM, or Spark dependency
-- [ ] README shows the live URL and what the project does, above any implementation detail
+      <- the only one still open; there are no input forms (verified 2026-08-21)
+- [x] Every result number expands to a derivation showing formula, inputs, and evidence
+- [x] Reconciliation invariant passes for every month, every band, both sides
+- [x] Property tests green, including allocation sum preservation and the break-even crossings
+- [x] Changing a 401(k) contribution marks the override `STALE` and the API names the field
+- [x] No monetary value crosses the API as a JSON number
+- [x] `pyproject.toml` contains no AWS, LLM, or Spark dependency
+- [x] README shows the live URL and what the project does, above any implementation detail
 
 When every box is checked, you have something worth linking to in an application. That is the point
 of phase 1, and nothing in any later phase is worth delaying it for.
