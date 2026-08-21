@@ -32,9 +32,22 @@ class Settings(BaseSettings):
     #: depend on a secret that only exists on one machine.
     connection_string: str | None = Field(default=None, alias="CONNECTION_STRING")
 
+    #: Anthropic API key. Absent in CI by design: the whole LLM client is
+    #: tested through an injected transport, so a green suite never needs a
+    #: key and no key is ever spent proving the retry loop works.
+    anthropic_api_key: str | None = Field(default=None, alias="ANTHROPIC_API_KEY")
+
+    #: Overridable per environment so a cheaper model can be pinned for a bulk
+    #: run without editing code. Left as None to take the client's default.
+    anthropic_model: str | None = Field(default=None, alias="ANTHROPIC_MODEL")
+
     @property
     def database_available(self) -> bool:
         return bool(self.connection_string)
+
+    @property
+    def llm_available(self) -> bool:
+        return bool(self.anthropic_api_key)
 
     @property
     def sqlalchemy_dsn(self) -> str:
