@@ -24,27 +24,32 @@
 
 ---
 
-## Preflight (do this first, once)
+## Preflight — RESOLVED, read before Task 1
 
-- [ ] **Clear the ACLs blocking git**
+**Work on `main`. Do not attempt to switch branches.**
 
-Run in PowerShell as Administrator:
+The original instruction was to work on `fix/import-data-integrity`. That branch exists but
+cannot be checked out: a Codex sandbox left explicit `Deny` ACEs on `.git/HEAD` and
+`.git/config`, and Windows evaluates Deny before Allow, so `git switch` fails with
+`unable to write symref for HEAD: Permission denied` even for the repository owner. Creating
+refs works; repointing HEAD does not.
 
-```powershell
-cd "c:\Users\JJ\Desktop\Jaehoon\Projects\wdo"
-icacls ".git" /T /C `
-  /remove:d "*S-1-5-21-3114834670-1257490681-952037396-3407646853" `
-  /remove:d "*S-1-5-21-3727157759-2440595167-3518582032-3120531983"
-```
+The repository owner was asked and **explicitly chose to commit all tasks directly to `main`**
+rather than block on clearing the ACLs. That decision is recorded here so no executor wastes
+time retrying the switch or halts at a stale gate.
 
-- [ ] **Switch to the working branch**
+- [ ] **Confirm you are on `main` with a clean tree**
 
 ```bash
-git switch fix/import-data-integrity
-git branch --show-current   # must print fix/import-data-integrity
+git branch --show-current   # expect: main
+git status --short          # expect: empty
 ```
 
-Do not start Task 1 until this prints the branch name. If it still fails, stop and report — every task below commits, and committing to `main` is not what was asked for.
+- [ ] **Do NOT run `git switch` or `git checkout -b`.** They will fail. Commit to `main` as
+      each task directs.
+
+If branch operations start working again mid-execution, that is a bonus, not a reason to
+change course — switching partway would split the work across two branches.
 
 ---
 
