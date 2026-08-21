@@ -24,7 +24,9 @@ from datetime import date, datetime
 from decimal import Decimal
 
 from sqlalchemy import (
+    JSON,
     Boolean,
+    CheckConstraint,
     Date,
     DateTime,
     ForeignKey,
@@ -33,6 +35,7 @@ from sqlalchemy import (
     Numeric,
     String,
     Text,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -118,6 +121,52 @@ class ResultComponentRow(Base):
     run: Mapped[ComparisonRunRow] = relationship(back_populates="components")
 
     __table_args__ = (Index("ix_result_components_run_position", "run_id", "position"),)
+
+
+class TransactionRow(Base):
+    """One transaction accepted from an inspected bank-export preview.
+
+    ``fingerprint`` is not unique by itself: two identical charges on one day
+    can both be real. ``occurrence`` preserves that multiplicity, while the
+    three-column constraint makes importing the same rows into the same account
+    idempotent.
+
+    Kind and category arrive later, after categorisation. This table records
+    what the bank said without inventing a classification at ingest time.
+    """
+
+    __tablename__ = "transactions"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    imported_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+    account: Mapped[str] = mapped_column(String(200))
+    posted_on: Mapped[date] = mapped_column(Date)
+    description: Mapped[str] = mapped_column(Text)
+    normalised_merchant: Mapped[str] = mapped_column(Text)
+
+    currency: Mapped[str] = mapped_column(String(3))
+    amount: Mapped[Decimal] = mapped_column(MONEY)
+
+    fingerprint: Mapped[str] = mapped_column(String(32), index=True)
+    occurrence: Mapped[int] = mapped_column(Integer)
+
+    source_file: Mapped[str] = mapped_column(String(255))
+    source_line: Mapped[int] = mapped_column(Integer)
+    raw_cells: Mapped[dict[str, str]] = mapped_column(JSON)
+
+    __table_args__ = (
+        CheckConstraint("occurrence > 0", name="ck_transactions_occurrence_positive"),
+        CheckConstraint("source_line > 1", name="ck_transactions_source_line_after_header"),
+        UniqueConstraint(
+            "account",
+            "fingerprint",
+            "occurrence",
+            name="uq_transactions_account_fingerprint_occurrence",
+        ),
+        Index("ix_transactions_account_posted_on", "account", "posted_on"),
+        Index("ix_transactions_imported_at", "imported_at"),
+    )
 
 
 class SchemaNote(Base):

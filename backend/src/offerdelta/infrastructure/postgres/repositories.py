@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -23,7 +23,9 @@ from offerdelta.domain.common.rounding import CURRENCY_DISPLAY
 from offerdelta.infrastructure.postgres.models import (
     ComparisonRunRow,
     ResultComponentRow,
+    TransactionRow,
 )
+from offerdelta.ingest.commit import ImportPlan
 
 
 @dataclass(frozen=True)
@@ -41,6 +43,50 @@ class StoredRun:
     wealth_delta: Money
     reconciled: bool
     component_count: int
+
+
+@dataclass(frozen=True)
+class StoredTransaction:
+    """An imported bank row as it came back from storage."""
+
+    id: uuid.UUID
+    imported_at: datetime
+    account: str
+    posted_on: date
+    description: str
+    normalised_merchant: str
+    amount: Money
+    fingerprint: str
+    occurrence: int
+    source_file: str
+    source_line: int
+    raw_cells: dict[str, str]
+
+
+@dataclass(frozen=True)
+class AlreadyStoredTransaction:
+    """A source row that matched one already stored for this account."""
+
+    source_line: int
+    fingerprint: str
+    occurrence: int
+
+
+@dataclass(frozen=True)
+class TransactionImportResult:
+    """The complete, non-silent outcome of a transaction import."""
+
+    attempted_count: int
+    imported_ids: tuple[uuid.UUID, ...]
+    already_stored: tuple[AlreadyStoredTransaction, ...]
+
+    @property
+    def imported_count(self) -> int:
+        return len(self.imported_ids)
+
+    @property
+    def already_stored_count(self) -> int:
+        return len(self.already_stored)
 
 
 def _quantised(amount: Money) -> Money:
@@ -145,6 +191,107 @@ class ComparisonRunRepository:
         return len(self._session.scalars(select(ComparisonRunRow.id)).all())
 
 
+class TransactionRepository:
+    """Stores inspected bank rows without collapsing real duplicate charges."""
+
+    def __init__(self, session: Session) -> None:
+        self._session = session
+
+    def import_plan(
+        self,
+        plan: ImportPlan,
+        *,
+        now: datetime | None = None,
+    ) -> TransactionImportResult:
+        """Write new occurrence identities and report every stored match.
+
+        The unique constraint is the final concurrency guard. The read first is
+        what turns an ordinary re-import into a useful result instead of an
+        exception; a genuinely concurrent import still fails the whole unit of
+        work rather than leaving a partial batch behind.
+        """
+        fingerprints = {planned.row.fingerprint for planned in plan.rows}
+        existing = set(
+            self._session.execute(
+                select(TransactionRow.fingerprint, TransactionRow.occurrence).where(
+                    TransactionRow.account == plan.account,
+                    TransactionRow.fingerprint.in_(fingerprints),
+                )
+            ).all()
+        )
+
+        imported_ids: list[uuid.UUID] = []
+        already_stored: list[AlreadyStoredTransaction] = []
+        imported_at = now or datetime.now(UTC)
+
+        for planned in plan.rows:
+            row = planned.row
+            identity = (row.fingerprint, planned.occurrence)
+            if identity in existing:
+                already_stored.append(
+                    AlreadyStoredTransaction(
+                        source_line=row.line,
+                        fingerprint=row.fingerprint,
+                        occurrence=planned.occurrence,
+                    )
+                )
+                continue
+
+            identifier = uuid.uuid4()
+            imported_ids.append(identifier)
+            self._session.add(
+                TransactionRow(
+                    id=identifier,
+                    imported_at=imported_at,
+                    account=plan.account,
+                    posted_on=row.posted_on,
+                    description=row.description,
+                    normalised_merchant=row.normalised_merchant,
+                    currency=row.amount.currency,
+                    amount=_quantised(row.amount).amount,
+                    fingerprint=row.fingerprint,
+                    occurrence=planned.occurrence,
+                    source_file=plan.source_file,
+                    source_line=row.line,
+                    raw_cells=dict(row.raw),
+                )
+            )
+
+        if imported_ids:
+            try:
+                self._session.flush()
+            except IntegrityError as error:
+                raise ValidationError(
+                    "transaction import conflicted with another import; retry so stored "
+                    "duplicates can be reported safely"
+                ) from error
+
+        return TransactionImportResult(
+            attempted_count=len(plan.rows),
+            imported_ids=tuple(imported_ids),
+            already_stored=tuple(already_stored),
+        )
+
+    def get(self, transaction_id: uuid.UUID) -> StoredTransaction | None:
+        row = self._session.get(TransactionRow, transaction_id)
+        return None if row is None else _to_stored_transaction(row)
+
+    def recent(self, *, account: str, limit: int = 20) -> list[StoredTransaction]:
+        rows = self._session.scalars(
+            select(TransactionRow)
+            .where(TransactionRow.account == account)
+            .order_by(TransactionRow.posted_on.desc(), TransactionRow.id)
+            .limit(limit)
+        ).all()
+        return [_to_stored_transaction(row) for row in rows]
+
+    def count(self, *, account: str | None = None) -> int:
+        statement = select(TransactionRow.id)
+        if account is not None:
+            statement = statement.where(TransactionRow.account == account)
+        return len(self._session.scalars(statement).all())
+
+
 def _to_stored(row: ComparisonRunRow) -> StoredRun:
     return StoredRun(
         id=row.id,
@@ -158,4 +305,21 @@ def _to_stored(row: ComparisonRunRow) -> StoredRun:
         wealth_delta=Money(row.wealth_delta, row.currency),
         reconciled=row.reconciled,
         component_count=len(row.components),
+    )
+
+
+def _to_stored_transaction(row: TransactionRow) -> StoredTransaction:
+    return StoredTransaction(
+        id=row.id,
+        imported_at=row.imported_at,
+        account=row.account,
+        posted_on=row.posted_on,
+        description=row.description,
+        normalised_merchant=row.normalised_merchant,
+        amount=Money(row.amount, row.currency),
+        fingerprint=row.fingerprint,
+        occurrence=row.occurrence,
+        source_file=row.source_file,
+        source_line=row.source_line,
+        raw_cells=dict(row.raw_cells),
     )
