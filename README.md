@@ -226,6 +226,7 @@ uv run alembic upgrade head        # apply migrations, if a DSN is set
 
 ```bash
 uv run python preview_import.py statement.csv   # what an import would produce; writes nothing
+uv run python preview_import.py statement.csv --commit --account=checking  # after migration
 uv run python validate_dataset.py               # check annotations as you go
 uv run python llm_smoke.py                      # inspect the exact request, offline, no key
 uv run python llm_smoke.py --live               # one real API call; needs a key
@@ -241,7 +242,7 @@ backend/src/offerdelta/
   domain/          calculation core — standard library only, enforced by import-linter
   application/     use cases
   api/             HTTP surface — the only layer that knows FastAPI exists
-  ingest/          CSV mapping detection, date-order inference, import preview
+  ingest/          CSV mapping detection, date-order inference, preview and commit planning
   evaluation/      dataset, splitting, metrics, rule baseline, LLM, hybrid, report
   infrastructure/  postgres, llm client (transport, retry, structured output)
 docs/BLUEPRINT.md              full design and decision log
@@ -250,7 +251,7 @@ docs/status/                   dated progress notes and the running TODO
 docs/planning/PHASE-1-SCOPE.md scope contract
 ```
 
-916 tests. Lint, types, architecture boundaries, and tests run in one command and in CI.
+929 tests. Lint, types, architecture boundaries, and tests run in one command and in CI.
 
 ## A note on naming
 
